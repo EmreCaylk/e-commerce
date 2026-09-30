@@ -178,18 +178,50 @@ const menCategories = categories.filter(
                >
                 <div className="
                 grid
-                min-w-[430px]
+                min-w-107.5
                 grid-cols-2
-                gap-[50px]
+                gap-12.5
                 bg-white
-                px-[28px]
-                py-[24px]
-                shadow-lg
-                "   >
+                px-7
+                py-6
+                shadow-1g
+                "
+                >
+                   {/* KADIN */}
+                   <div className="flex flex-col gap-3">
+                    <h3 className="mb-2 text-[16px] font-bold text-[#252B42]">
+                      Kadın
+                    </h3>
 
+                    {womenCategories.map((category)=> (
+                      <Link
+                      key={category.id}
+                      to={`/shop/kadin/${category.code.split(":")[1]}/${category.id}`}
+                      className="text-[14px] font-semibold text-[#737373] hover:text-[#23A6F0]"
+                      >
+                      {category.title}
+                      </Link>
+                    ))}
+                   </div>
+                   {/* ERKEK */}
+                   <div className="flex flex-col gap-3">
+                  <h3 className="mb-2 text-[16px] font-bold text-[#252B42]">
+                    Erkek
+                  </h3>
+
+                  {menCategories.map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/shop/erkek/${category.code.split(":")[1]}/${category.id}`}
+                      className="text-[14px] font-semibold text-[#737373] hover:text-[#23A6F0]"
+                    >
+                      {category.title}
+                    </Link>
+                  ))}
                 </div>
-
-               </div>
+                </div>
+              </div>
+              
 
             </div>
 

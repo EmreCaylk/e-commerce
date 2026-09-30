@@ -98,3 +98,67 @@ export const fetchCategories = () => {
     }
   };
 };
+
+// ================= FETCH PRODUCTS THUNK =================
+
+export const fetchProducts = (
+  category,
+  filter,
+  sort,
+  limit = 25,
+  offset = 0
+) => {
+  return async (dispatch) => {
+    try {
+      // İstek başladı
+      dispatch(setFetchState("FETCHING"));
+
+      // Query parametreleri
+      const params = {
+        limit,
+        offset,
+      };
+
+      // T14 parametreleri varsa koruyoruz
+      if (category) {
+        params.category = category;
+      }
+
+      if (filter) {
+        params.filter = filter;
+      }
+
+      if (sort) {
+        params.sort = sort;
+      }
+
+      // API isteği
+      const response = await api.get("/products", {
+        params,
+      });
+
+      console.log("PRODUCTS:", response.data);
+      console.log("PRODUCT PARAMS:", params);
+
+      // Ürünleri Redux'a kaydet
+      dispatch(setProductList(response.data.products));
+
+      // Toplam ürün sayısını Redux'a kaydet
+      dispatch(setTotal(response.data.total));
+
+      // Redux pagination değerlerini kaydet
+      dispatch(setLimit(limit));
+      dispatch(setOffset(offset));
+
+      // İstek başarılı
+      dispatch(setFetchState("FETCHED"));
+    } catch (error) {
+      console.error(
+        "PRODUCTS HATASI:",
+        error.response?.data || error.message
+      );
+
+      dispatch(setFetchState("FAILED"));
+    }
+  };
+};

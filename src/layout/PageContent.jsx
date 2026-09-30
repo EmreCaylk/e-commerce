@@ -15,6 +15,10 @@ export default function PageContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route
+        path="/shop/:gender/:categoryName/:categoryId"
+        element={<ShopPage />}
+      />
+        <Route
           path="/product/:productId"
           element={<ProductDetailPage />}
         />
@@ -23,6 +27,7 @@ export default function PageContent() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        
       </Routes>
     </main>
   );
