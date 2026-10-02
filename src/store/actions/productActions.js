@@ -8,73 +8,91 @@ import {
   SET_LIMIT,
   SET_OFFSET,
   SET_FILTER,
+  SET_PRODUCT,
 } from "../reducers/productReducer.js";
-
-
 
 
 // ================= SET CATEGORIES =================
 
 export const setCategories = (categories) => {
-    return {
-        type: SET_CATEGORIES,
-        payload:categories,
-    };
+  return {
+    type: SET_CATEGORIES,
+    payload: categories,
+  };
 };
+
 
 // ================= SET TOTAL =================
 
 export const setTotal = (total) => {
-    return {
-        type:SET_TOTAL,
-        payload:total,
-    };
+  return {
+    type: SET_TOTAL,
+    payload: total,
+  };
 };
 
- // ================= SET PRODUCT LIST =================
 
- export const setProductList = (ProductList) => {
-    return {
-        type: SET_PRODUCT_LIST,
-        payload:ProductList,
-    };
- };
+// ================= SET PRODUCT LIST =================
 
-  // ================= SET FETCH STATE=================
-
-  export const setFetchState = (fetchState) => {
-    return {
-        type: SET_FETCH_STATE,
-        payload:fetchState,
-    };
+export const setProductList = (productList) => {
+  return {
+    type: SET_PRODUCT_LIST,
+    payload: productList,
   };
+};
 
-    // ================= SET LIMIT=================
 
-    export const setLimit = (limit) => {
-        return {
-            type: SET_LIMIT,
-            payload:limit,
-        };
-    };
+// ================= SET FETCH STATE =================
 
-    // ================= SET OFFSET=================
+export const setFetchState = (fetchState) => {
+  return {
+    type: SET_FETCH_STATE,
+    payload: fetchState,
+  };
+};
 
-    export const setOffset = (offset) => {
-        return {
-            type:SET_OFFSET,
-            payload:offset,
-        };
-    };
 
-     // ================= SET FILTER=================
+// ================= SET LIMIT =================
 
-     export const setFilter = (filter) => {
-        return {
-            type:SET_FILTER,
-            payload:filter,
-        };
-     };
+export const setLimit = (limit) => {
+  return {
+    type: SET_LIMIT,
+    payload: limit,
+  };
+};
+
+
+// ================= SET OFFSET =================
+
+export const setOffset = (offset) => {
+  return {
+    type: SET_OFFSET,
+    payload: offset,
+  };
+};
+
+
+// ================= SET FILTER =================
+
+export const setFilter = (filter) => {
+  return {
+    type: SET_FILTER,
+    payload: filter,
+  };
+};
+
+
+// ================= SET PRODUCT =================
+
+export const setProduct = (product) => {
+  return {
+    type: SET_PRODUCT,
+    payload: product,
+  };
+};
+
+
+// ================= FETCH CATEGORIES =================
 
 export const fetchCategories = () => {
   return async (dispatch, getState) => {
@@ -99,29 +117,24 @@ export const fetchCategories = () => {
   };
 };
 
-// ================= FETCH PRODUCTS THUNK =================
+
+// ================= FETCH PRODUCTS =================
 
 export const fetchProducts = (
-  category,
+  categoryId,
   filter,
   sort,
-  limit = 25,
-  offset = 0
+  limit,
+  offset
 ) => {
   return async (dispatch) => {
     try {
-      // İstek başladı
       dispatch(setFetchState("FETCHING"));
 
-      // Query parametreleri
-      const params = {
-        limit,
-        offset,
-      };
+      const params = {};
 
-      // T14 parametreleri varsa koruyoruz
-      if (category) {
-        params.category = category;
+      if (categoryId) {
+        params.category = categoryId;
       }
 
       if (filter) {
@@ -132,26 +145,30 @@ export const fetchProducts = (
         params.sort = sort;
       }
 
-      // API isteği
+      if (limit !== undefined) {
+        params.limit = limit;
+      }
+
+      if (offset !== undefined) {
+        params.offset = offset;
+      }
+
       const response = await api.get("/products", {
         params,
       });
 
       console.log("PRODUCTS:", response.data);
-      console.log("PRODUCT PARAMS:", params);
 
-      // Ürünleri Redux'a kaydet
-      dispatch(setProductList(response.data.products));
+      dispatch(
+        setProductList(response.data.products)
+      );
 
-      // Toplam ürün sayısını Redux'a kaydet
-      dispatch(setTotal(response.data.total));
+      dispatch(
+        setTotal(response.data.total)
+      );
 
-      // Redux pagination değerlerini kaydet
-      dispatch(setLimit(limit));
-      dispatch(setOffset(offset));
-
-      // İstek başarılı
       dispatch(setFetchState("FETCHED"));
+
     } catch (error) {
       console.error(
         "PRODUCTS HATASI:",
@@ -159,6 +176,46 @@ export const fetchProducts = (
       );
 
       dispatch(setFetchState("FAILED"));
+    }
+  };
+};
+
+
+// ================= FETCH PRODUCT DETAIL =================
+
+export const fetchProduct = (productId) => {
+  return async (dispatch) => {
+    try {
+      dispatch(setFetchState("FETCHING"));
+
+      const response = await api.get(
+        `/products/${productId}`
+      );
+
+      console.log(
+        "PRODUCT DETAIL:",
+        response.data
+      );
+
+      dispatch(
+        setProduct(response.data)
+      );
+
+      dispatch(
+        setFetchState("FETCHED")
+      );
+
+    } catch (error) {
+      console.error(
+        "PRODUCT DETAIL HATASI:",
+        error.response?.data || error.message
+      );
+
+      
+      // Hata olduğunda FETCHING değil FAILED olacak.
+      dispatch(
+        setFetchState("FAILED")
+      );
     }
   };
 };

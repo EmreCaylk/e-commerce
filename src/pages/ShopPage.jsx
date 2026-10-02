@@ -3,8 +3,10 @@ import { LayoutGrid, List } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchProducts, setOffset } from "../store/actions/productActions.js";
-
+import {
+  fetchProducts,
+  setOffset,
+} from "../store/actions/productActions.js";
 
 import shop1 from "../assets/shop1.jpg";
 import shop2 from "../assets/shop2.jpg";
@@ -32,7 +34,27 @@ import brand4 from "../assets/brand4.png";
 import brand5 from "../assets/brand5.png";
 import brand6 from "../assets/brand6.png";
 
+
+/* ================= SLUG ================= */
+
+const createSlug = (name = "") => {
+  return String(name)
+    .toLowerCase()
+    .trim()
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
+
 export default function ShopPage() {
+  /* ================= CATEGORIES ================= */
+
   const categories = [
     { id: 1, image: shop1 },
     { id: 2, image: shop2 },
@@ -40,6 +62,9 @@ export default function ShopPage() {
     { id: 4, image: shop4 },
     { id: 5, image: shop5 },
   ];
+
+
+  /* ================= STATIC PRODUCTS ================= */
 
   const products = [
     { id: 1, image: product1 },
@@ -56,6 +81,9 @@ export default function ShopPage() {
     { id: 12, image: product12 },
   ];
 
+
+  /* ================= BRANDS ================= */
+
   const brands = [
     { id: 1, image: brand1 },
     { id: 2, image: brand2 },
@@ -66,14 +94,23 @@ export default function ShopPage() {
   ];
 
 
-  
+  /* ================= URL PARAMS ================= */
 
-    
+  const {
+    gender,
+    categoryName,
+    categoryId,
+  } = useParams();
+
+
+  /* ================= FILTER ================= */
+
   const [filter, setFilter] = useState("");
   const [selectedSort, setSelectedSort] = useState("");
   const [sort, setSort] = useState("");
 
-  const { categoryId } = useParams();
+
+  /* ================= REDUX ================= */
 
   const dispatch = useDispatch();
 
@@ -97,10 +134,17 @@ export default function ShopPage() {
     (state) => state.product.offset
   );
 
-  const totalPages = Math.ceil(total / limit);
-  const activePage = Math.floor(offset / limit) + 1;
 
-  // T15 - API isteği
+  /* ================= PAGINATION ================= */
+
+  const totalPages = Math.ceil(total / limit);
+
+  const activePage =
+    Math.floor(offset / limit) + 1;
+
+
+  /* ================= FETCH PRODUCTS ================= */
+
   useEffect(() => {
     dispatch(
       fetchProducts(
@@ -111,423 +155,381 @@ export default function ShopPage() {
         offset
       )
     );
-  }, [categoryId, filter, sort, limit, offset, dispatch]);
+  }, [
+    categoryId,
+    filter,
+    sort,
+    limit,
+    offset,
+    dispatch,
+  ]);
 
-  
+
+  /* ================= PAGE CHANGE ================= */
+
   const handlePageChange = (page) => {
-    const newOffset = (page - 1) * limit;
+    if (page < 1 || page > totalPages) {
+      return;
+    }
 
-    dispatch(
-      fetchProducts(
-        categoryId,
-        filter,
-        sort,
-        limit,
-        newOffset
-      )
-    );
+    const newOffset =
+      (page - 1) * limit;
+
+    dispatch(setOffset(newOffset));
   };
 
+
+  /* ================= PRODUCT URL ================= */
+
+  const getProductUrl = (product) => {
+    const currentGender =
+      gender || "shop";
+
+    const currentCategoryName =
+      categoryName || "category";
+
+    const currentCategoryId =
+      categoryId || product.category_id;
+
+    return `/shop/${currentGender}/${currentCategoryName}/${currentCategoryId}/${createSlug(
+      product.name
+    )}/${product.id}`;
+  };
+
+
   return (
-     <>
-    <div className="flex w-full flex-col">
-      {/* ================= SHOP TOP ================= */}
-      <section className="flex w-full justify-center bg-[#FAFAFA]">
-        <div
-          className="
-            flex w-full max-w-360 flex-col
-            px-6 py-8
-            lg:px-48.75 lg:py-6
-          "
-        >
-          {/* TITLE + BREADCRUMB */}
+    <>
+      <div className="flex w-full flex-col">
+
+        {/* ================= SHOP TOP ================= */}
+
+        <section className="flex w-full justify-center bg-[#FAFAFA]">
           <div
             className="
-              flex w-full flex-col items-center gap-5
-              lg:flex-row lg:justify-between
+              flex w-full max-w-360 flex-col
+              px-6 py-8
+              lg:px-48.75 lg:py-6
             "
           >
-            <h1 className="text-2xl font-bold text-[#252B42]">
-              Shop
-            </h1>
 
-            <div className="flex items-center gap-4 text-sm font-bold">
-              <Link to="/" className="text-[#252B42]">
-                Home
-              </Link>
+            {/* TITLE + BREADCRUMB */}
 
-              <span className="text-xl text-[#BDBDBD]">
-                ›
-              </span>
-
-              <span className="text-[#BDBDBD]">
-                Shop
-              </span>
-            </div>
-          </div>
-
-          {/* ================= CATEGORIES ================= */}
-          <div
-            className="
-              mt-8 flex w-full flex-col
-              items-center justify-center gap-4
-              md:flex-row md:flex-wrap
-              lg:flex-nowrap
-            "
-          >
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="
-                  relative flex h-55.75 w-full
-                  max-w-51.25 shrink-0
-                  items-center justify-center
-                  overflow-hidden
-                "
-              >
-                <img
-                  src={category.image}
-                  alt="Shop category"
-                  className="absolute h-full w-full object-cover"
-                />
-
-                <div className="absolute inset-0 bg-black/25"></div>
-
-                <div
-                  className="
-                    relative z-10 flex flex-col
-                    items-center text-center text-white
-                  "
-                >
-                  <h2 className="text-base font-bold">
-                    CLOTHS
-                  </h2>
-
-                  <p className="mt-2 text-sm font-bold">
-                    5 Items
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-          {/* ================= FILTER ROW ================= */}
-              <section className="flex w-full justify-center bg-white">
             <div
               className="
-                flex w-full max-w-262.5 flex-col
-                items-center gap-6 px-6 py-6
+                flex w-full flex-col
+                items-center gap-5
                 lg:flex-row lg:justify-between
-                lg:px-0
               "
             >
-              {/* RESULTS */}
+              <h1 className="text-2xl font-bold text-[#252B42]">
+                Shop
+              </h1>
 
-              <p className="text-sm font-bold text-[#737373]">
-                 Showing all {total} results
-              </p>
+              <div className="flex items-center gap-4 text-sm font-bold">
+                <Link
+                  to="/"
+                  className="text-[#252B42]"
+                >
+                  Home
+                </Link>
 
-              {/* VIEWS */}
-
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-bold text-[#737373]">
-                  Views:
+                <span className="text-xl text-[#BDBDBD]">
+                  ›
                 </span>
 
-                <button
-                  type="button"
-                  className="
-                    flex h-11.5 w-11.5
-                    cursor-pointer items-center justify-center
-                    rounded-md border border-[#ECECEC]
-                    bg-white text-[#252B42]
-                  "
-                >
-                  <LayoutGrid size={18} />
-                </button>
-
-                <button
-                  type="button"
-                  className="
-                    flex h-11.5 w-11.5
-                    cursor-pointer items-center justify-center
-                    rounded-md border border-[#ECECEC]
-                    bg-white text-[#737373]
-                  "
-                >
-                  <List size={18} />
-                </button>
-              </div>
-
-              {/* FILTER + SORT */}
-
-              <div
-                className="
-                  flex flex-col items-center gap-4
-                  sm:flex-row
-                "
-              >
-                {/* FILTER INPUT */}
-
-                <input
-                  type="text"
-                  value={filter}
-                  onChange={(event) => setFilter(event.target.value)}
-                  placeholder="Search products..."
-                  className="
-                    h-12.5 w-45
-                    rounded-md
-                    border border-[#DDDDDD]
-                    bg-[#F9F9F9] px-4
-                    text-sm text-[#737373]
-                    outline-none
-                  "
-                />
-
-                {/* SORT SELECT */}
-
-                <select
-                  value={selectedSort}
-                  onChange={(event) =>
-                    setSelectedSort(event.target.value)
-                  }
-                  className="
-                    h-12.5 w-45
-                    cursor-pointer rounded-md
-                    border border-[#DDDDDD]
-                    bg-[#F9F9F9] px-4
-                    text-sm text-[#737373]
-                    outline-none
-                  "
-                >
-                  <option value="">
-                    Sort
-                  </option>
-
-                  <option value="price:asc">
-                    Price: Low to High
-                  </option>
-
-                  <option value="price:desc">
-                    Price: High to Low
-                  </option>
-
-                  <option value="rating:asc">
-                    Rating: Low to High
-                  </option>
-
-                  <option value="rating:desc">
-                    Rating: High to Low
-                  </option>
-                </select>
-
-                {/* FILTER BUTTON */}
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSort(selectedSort);
-                    setCurrentPage(3);
-                  }}
-                  className="
-                    flex h-12.5
-                    cursor-pointer items-center justify-center
-                    rounded-md bg-[#23A6F0]
-                    px-6 text-sm font-bold text-white
-                  "
-                >
-                  Filter
-                </button>
+                <span className="text-[#BDBDBD]">
+                  Shop
+                </span>
               </div>
             </div>
-          </section>
 
-          {/* ================= PRODUCTS ================= */}
 
-      <section className="flex w-full justify-center bg-white">
-        <div
-          className="
-            flex w-full max-w-262.5
-            flex-wrap items-start justify-center
-            gap-x-7.5 gap-y-12.5
-            px-6 py-12
-            lg:px-0
-          "
-        >
-          {/* ================= PAGE 1 ================= */}
+            {/* ================= CATEGORIES ================= */}
 
-          {activePage === 1  &&
-            products.map((product) => (
-              <Link
-                key={product.id}
-                to={`/product/${product.id}`}
-                className="
-                  flex w-59.5 shrink-0
-                  cursor-pointer flex-col
-                  items-center bg-white
-                  no-underline
-                "
-              >
-                <img
-                  src={product.image}
-                  alt={`Product ${product.id}`}
-                  className="
-                    h-75 w-59.5
-                    object-cover
-                  "
-                />
-
+            <div
+              className="
+                mt-8 flex w-full flex-col
+                items-center justify-center gap-4
+                md:flex-row md:flex-wrap
+                lg:flex-nowrap
+              "
+            >
+              {categories.map((category) => (
                 <div
+                  key={category.id}
                   className="
-                    flex w-full flex-col
-                    items-center px-5 py-6
-                    text-center
+                    relative flex h-55.75 w-full
+                    max-w-51.25 shrink-0
+                    items-center justify-center
+                    overflow-hidden
                   "
                 >
-                  <h3 className="text-base font-bold text-[#252B42]">
-                    Graphic Design
-                  </h3>
+                  <img
+                    src={category.image}
+                    alt="Shop category"
+                    className="
+                      absolute h-full w-full
+                      object-cover
+                    "
+                  />
 
-                  <p className="mt-2 text-sm font-bold text-[#737373]">
-                    English Department
-                  </p>
-
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="text-base font-bold text-[#BDBDBD]">
-                      $16.48
-                    </span>
-
-                    <span className="text-base font-bold text-[#23856D]">
-                      $6.48
-                    </span>
-                  </div>
+                  <div className="absolute inset-0 bg-black/25" />
 
                   <div
                     className="
-                      mt-4 flex h-4 w-20.5
-                      items-center justify-between
+                      relative z-10 flex flex-col
+                      items-center text-center text-white
                     "
                   >
-                    <span className="h-4 w-4 rounded-full bg-[#23A6F0]"></span>
-                    <span className="h-4 w-4 rounded-full bg-[#23856D]"></span>
-                    <span className="h-4 w-4 rounded-full bg-[#E77C40]"></span>
-                    <span className="h-4 w-4 rounded-full bg-[#252B42]"></span>
+                    <h2 className="text-base font-bold">
+                      CLOTHS
+                    </h2>
+
+                    <p className="mt-2 text-sm font-bold">
+                      5 Items
+                    </p>
                   </div>
                 </div>
-              </Link>
-            ))}
-
-          {/* ================= PAGE 2 LOADING ================= */}
-
-          {activePage  === 2 && fetchState === "FETCHING" && (
-            <div className="flex min-h-100 w-full items-center justify-center">
-              <div
-                className="
-                  h-12 w-12
-                  animate-spin rounded-full
-                  border-4 border-[#E6E6E6]
-                  border-t-[#23A6F0]
-                "
-              ></div>
-            </div>
-          )}
-
-          {/* ================= PAGE 2 - T13 ================= */}
-
-          {activePage  === 2 &&
-            fetchState !== "FETCHING" &&
-            productList.map((product) => (
-              <Link
-                key={product.id}
-                to={`/product/${product.id}`}
-                className="
-                  flex w-59.5 shrink-0
-                  cursor-pointer flex-col
-                  items-center bg-white
-                  no-underline
-                "
-              >
-                <img
-                  src={product.images?.[0]?.url}
-                  alt={product.name}
-                  className="
-                    h-75 w-59.5
-                    object-cover
-                  "
-                />
-
-                <div
-                  className="
-                    flex w-full flex-col
-                    items-center px-5 py-6
-                    text-center
-                  "
-                >
-                  <h3 className="text-base font-bold text-[#252B42]">
-                    {product.name}
-                  </h3>
-
-                  <p className="mt-2 text-sm font-bold text-[#737373]">
-                    {product.description}
-                  </p>
-
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="text-base font-bold text-[#BDBDBD]">
-                      $16.48
-                    </span>
-
-                    <span className="text-base font-bold text-[#23856D]">
-                      ${product.price}
-                    </span>
-                  </div>
-
-                  <div
-                    className="
-                      mt-4 flex h-4 w-20.5
-                      items-center justify-between
-                    "
-                  >
-                    <span className="h-4 w-4 rounded-full bg-[#23A6F0]"></span>
-                    <span className="h-4 w-4 rounded-full bg-[#23856D]"></span>
-                    <span className="h-4 w-4 rounded-full bg-[#E77C40]"></span>
-                    <span className="h-4 w-4 rounded-full bg-[#252B42]"></span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-        </div>
-</section>
-        {/* ================= PAGE 3 - T14 LOADING ================= */}
-        {activePage  === 3 && fetchState === "FETCHING" && (
-          <div className="flex min-h-100 w-full items-center justify-center">
-            <div className="
-            h-12 w-12
-            animate-spin rounded-full
-            border-4 border-[#E6E6E6]
-            border-t-[#23A6F0]            
-           "
-           >
+              ))}
             </div>
 
           </div>
-        )}
-                  {/* ================= PAGE 3 - T14 ================= */}
+        </section>
 
-        {activePage  === 3 && (
-          <section className="flex w-full justify-center bg-white">
+
+        {/* ================= FILTER ROW ================= */}
+
+        <section className="flex w-full justify-center bg-white">
+          <div
+            className="
+              flex w-full max-w-262.5 flex-col
+              items-center gap-6 px-6 py-6
+              lg:flex-row lg:justify-between
+              lg:px-0
+            "
+          >
+
+            {/* RESULTS */}
+
+            <p className="text-sm font-bold text-[#737373]">
+              Showing all {total} results
+            </p>
+
+
+            {/* VIEWS */}
+
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-bold text-[#737373]">
+                Views:
+              </span>
+
+              <button
+                type="button"
+                className="
+                  flex h-11.5 w-11.5
+                  cursor-pointer items-center
+                  justify-center rounded-md
+                  border border-[#ECECEC]
+                  bg-white text-[#252B42]
+                "
+              >
+                <LayoutGrid size={18} />
+              </button>
+
+              <button
+                type="button"
+                className="
+                  flex h-11.5 w-11.5
+                  cursor-pointer items-center
+                  justify-center rounded-md
+                  border border-[#ECECEC]
+                  bg-white text-[#737373]
+                "
+              >
+                <List size={18} />
+              </button>
+            </div>
+
+
+            {/* FILTER + SORT */}
+
             <div
               className="
-                flex w-full max-w-262.5
-                flex-wrap items-start justify-center
-                gap-x-7.5 gap-y-12.5
-                px-6 py-12
-                lg:px-0
+                flex flex-col items-center gap-4
+                sm:flex-row
               "
             >
-              {/* LOADING */}
 
-              {fetchState === "FETCHING" && (
+              {/* SEARCH */}
+
+              <input
+                type="text"
+                value={filter}
+                onChange={(event) =>
+                  setFilter(event.target.value)
+                }
+                placeholder="Search products..."
+                className="
+                  h-12.5 w-45
+                  rounded-md
+                  border border-[#DDDDDD]
+                  bg-[#F9F9F9] px-4
+                  text-sm text-[#737373]
+                  outline-none
+                "
+              />
+
+
+              {/* SORT */}
+
+              <select
+                value={selectedSort}
+                onChange={(event) =>
+                  setSelectedSort(event.target.value)
+                }
+                className="
+                  h-12.5 w-45
+                  cursor-pointer rounded-md
+                  border border-[#DDDDDD]
+                  bg-[#F9F9F9] px-4
+                  text-sm text-[#737373]
+                  outline-none
+                "
+              >
+                <option value="">
+                  Sort
+                </option>
+
+                <option value="price:asc">
+                  Price: Low to High
+                </option>
+
+                <option value="price:desc">
+                  Price: High to Low
+                </option>
+
+                <option value="rating:asc">
+                  Rating: Low to High
+                </option>
+
+                <option value="rating:desc">
+                  Rating: High to Low
+                </option>
+              </select>
+
+
+              {/* FILTER BUTTON */}
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSort(selectedSort);
+                  dispatch(setOffset(0));
+                }}
+                className="
+                  flex h-12.5
+                  cursor-pointer
+                  items-center justify-center
+                  rounded-md bg-[#23A6F0]
+                  px-6 text-sm font-bold
+                  text-white
+                "
+              >
+                Filter
+              </button>
+
+            </div>
+
+          </div>
+        </section>
+
+
+        {/* ================= PRODUCTS ================= */}
+
+        <section className="flex w-full justify-center bg-white">
+
+          <div
+            className="
+              flex w-full max-w-262.5
+              flex-wrap items-start
+              justify-center
+              gap-x-7.5 gap-y-12.5
+              px-6 py-12
+              lg:px-0
+            "
+          >
+
+            {/* PAGE 1 - STATIC DESIGN */}
+
+            {activePage === 1 &&
+              products.map((product) => (
+                <Link
+                  key={product.id}
+                  to={`/product/${product.id}`}
+                  className="
+                    flex w-59.5 shrink-0
+                    cursor-pointer flex-col
+                    items-center bg-white
+                    no-underline
+                    transition-transform
+                    duration-200
+                    hover:-translate-y-1
+                  "
+                >
+                  <img
+                    src={product.image}
+                    alt={`Product ${product.id}`}
+                    className="
+                      h-75 w-59.5
+                      object-cover
+                    "
+                  />
+
+                  <div
+                    className="
+                      flex w-full flex-col
+                      items-center px-5 py-6
+                      text-center
+                    "
+                  >
+                    <h3 className="text-base font-bold text-[#252B42]">
+                      Graphic Design
+                    </h3>
+
+                    <p className="mt-2 text-sm font-bold text-[#737373]">
+                      English Department
+                    </p>
+
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="text-base font-bold text-[#BDBDBD]">
+                        $16.48
+                      </span>
+
+                      <span className="text-base font-bold text-[#23856D]">
+                        $6.48
+                      </span>
+                    </div>
+
+                    <div
+                      className="
+                        mt-4 flex h-4 w-20.5
+                        items-center justify-between
+                      "
+                    >
+                      <span className="h-4 w-4 rounded-full bg-[#23A6F0]" />
+                      <span className="h-4 w-4 rounded-full bg-[#23856D]" />
+                      <span className="h-4 w-4 rounded-full bg-[#E77C40]" />
+                      <span className="h-4 w-4 rounded-full bg-[#252B42]" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+
+
+            {/* LOADING */}
+
+            {activePage !== 1 &&
+              fetchState === "FETCHING" && (
                 <div className="flex min-h-100 w-full items-center justify-center">
                   <div
                     className="
@@ -536,13 +538,15 @@ export default function ShopPage() {
                       border-4 border-[#E6E6E6]
                       border-t-[#23A6F0]
                     "
-                  ></div>
+                  />
                 </div>
               )}
 
-              {/* ERROR */}
 
-              {fetchState === "FAILED" && (
+            {/* ERROR */}
+
+            {activePage !== 1 &&
+              fetchState === "FAILED" && (
                 <div className="flex min-h-50 w-full items-center justify-center">
                   <p className="font-bold text-red-500">
                     Ürünler yüklenirken hata oluştu.
@@ -550,9 +554,12 @@ export default function ShopPage() {
                 </div>
               )}
 
-              {/* EMPTY */}
 
-              {fetchState === "FETCHED" && productList.length === 0 && (
+            {/* EMPTY */}
+
+            {activePage !== 1 &&
+              fetchState === "FETCHED" &&
+              productList.length === 0 && (
                 <div className="flex min-h-50 w-full items-center justify-center">
                   <p className="font-bold text-[#737373]">
                     Bu filtreye uygun ürün bulunamadı.
@@ -560,210 +567,260 @@ export default function ShopPage() {
                 </div>
               )}
 
-              {/* PRODUCTS */}
 
-              {fetchState === "FETCHED" &&
-                productList.map((product) => (
-                  <Link
-                    key={product.id}
-                    to={`/product/${product.id}`}
+            {/* API PRODUCTS */}
+
+            {activePage !== 1 &&
+              fetchState === "FETCHED" &&
+              productList.map((product) => (
+                <Link
+                  key={product.id}
+                  to={getProductUrl(product)}
+                  className="
+                    flex w-59.5 shrink-0
+                    cursor-pointer flex-col
+                    items-center bg-white
+                    no-underline
+                    transition-transform
+                    duration-200
+                    hover:-translate-y-1
+                  "
+                >
+
+                  <img
+                    src={product.images?.[0]?.url}
+                    alt={product.name}
                     className="
-                      flex w-59.5 shrink-0
-                      cursor-pointer flex-col
-                      items-center bg-white
-                      no-underline
+                      h-75 w-59.5
+                      object-cover
+                    "
+                  />
+
+                  <div
+                    className="
+                      flex w-full flex-col
+                      items-center px-5 py-6
+                      text-center
                     "
                   >
-                    <img
-                      src={product.images?.[0]?.url}
-                      alt={product.name}
-                      className="
-                        h-75 w-59.5
-                        object-cover
-                      "
-                    />
+
+                    <h3 className="text-base font-bold text-[#252B42]">
+                      {product.name}
+                    </h3>
+
+                    <p className="mt-2 text-sm font-bold text-[#737373]">
+                      {product.description}
+                    </p>
+
+                    <div className="mt-3 flex items-center gap-2">
+
+                      <span className="text-base font-bold text-[#23856D]">
+                        ${product.price}
+                      </span>
+
+                      <span className="text-base font-bold text-[#F3CD03]">
+                        ★ {product.rating}
+                      </span>
+
+                    </div>
 
                     <div
                       className="
-                        flex w-full flex-col
-                        items-center px-5 py-6
-                        text-center
+                        mt-4 flex h-4 w-20.5
+                        items-center justify-between
                       "
                     >
-                      <h3 className="text-base font-bold text-[#252B42]">
-                        {product.name}
-                      </h3>
-
-                      <p className="mt-2 text-sm font-bold text-[#737373]">
-                        {product.description}
-                      </p>
-
-                      <div className="mt-3 flex items-center gap-2">
-                        <span className="text-base font-bold text-[#23856D]">
-                          ${product.price}
-                        </span>
-                      </div>
-
-                      <div className="mt-4 flex h-4 w-20.5 items-center justify-between">
-                        <span className="h-4 w-4 rounded-full bg-[#23A6F0]"></span>
-                        <span className="h-4 w-4 rounded-full bg-[#23856D]"></span>
-                        <span className="h-4 w-4 rounded-full bg-[#E77C40]"></span>
-                        <span className="h-4 w-4 rounded-full bg-[#252B42]"></span>
-                      </div>
+                      <span className="h-4 w-4 rounded-full bg-[#23A6F0]" />
+                      <span className="h-4 w-4 rounded-full bg-[#23856D]" />
+                      <span className="h-4 w-4 rounded-full bg-[#E77C40]" />
+                      <span className="h-4 w-4 rounded-full bg-[#252B42]" />
                     </div>
-                  </Link>
-                ))}
-            </div>
-          </section>
-        )}
-                  {/* ================= T15 PAGINATION ================= */}
 
-            <section className="flex w-full justify-center bg-white py-12">
-              <div
-                className="
-                  flex max-w-full
-                  items-center overflow-hidden
-                  rounded-md border border-[#BDBDBD]
-                "
-              >
-                {/* FIRST */}
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={() => handlePageChange(1)}
-                  disabled={activePage === 1}
-                  className="
-                  cursor-pointer
-                    flex h-18.5 shrink-0 px-5
-                    items-center justify-center
-                    border-r border-[#BDBDBD]
-                    bg-[#F3F3F3]
-                    text-sm font-bold text-[#BDBDBD]
-                    disabled:cursor-not-allowed
-                  "
-                >
-                  First
-                </button>
+                </Link>
+              ))}
 
-                {/* 1 - 6 */}
+          </div>
+        </section>
 
-                {Array.from(
-                  {
-                    length: Math.min(totalPages, 6),
-                  },
-                  (_, index) => index + 1
-                ).map((page) => (
-                  <button
-                    key={page}
-                    type="button"
-                    onClick={() => handlePageChange(page)}
-                    className={`
-                      cursor-pointer
-                      flex h-18.5 w-12.25 shrink-0
-                      cursor-pointer items-center justify-center
-                      border-r border-[#BDBDBD]
-                      text-sm font-bold
-                      ${
-                        activePage === page
-                          ? "bg-[#23A6F0] text-white"
-                          : "bg-white text-[#23A6F0]"
-                      }
-                    `}
-                  >
-                    {page}
-                  </button>
-                ))}
 
-                {/* ... */}
+        {/* ================= PAGINATION ================= */}
 
-                {totalPages > 6 && (
-                  <span
-                    className="
-                    cursor-pointer
-                      flex h-18.5 w-12.25 shrink-0
-                      items-center justify-center
-                      border-r border-[#BDBDBD]
-                      bg-white
-                      text-sm font-bold text-[#737373]
-                    "
-                  >
-                    ...
-                  </span>
-                )}
+        <section className="flex w-full justify-center bg-white py-12">
 
-                {/* LAST PAGE */}
+          <div
+            className="
+              flex max-w-full
+              items-center overflow-hidden
+              rounded-md border border-[#BDBDBD]
+            "
+          >
 
-                {totalPages > 6 && (
-                  <button
-                    type="button"
-                    onClick={() => handlePageChange(totalPages)}
-                    className={`
-                      flex h-18.5 w-12.25 shrink-0
-                      cursor-pointer items-center justify-center
-                      border-r border-[#BDBDBD]
-                      text-sm font-bold
-                      ${
-                        activePage === totalPages
-                          ? "bg-[#23A6F0] text-white"
-                          : "bg-white text-[#23A6F0]"
-                      }
-                    `}
-                  >
-                    {totalPages}
-                  </button>
-                )}
+            {/* FIRST */}
 
-                {/* NEXT */}
-
-                <button
-                  type="button"
-                  onClick={() => handlePageChange(activePage + 1)}
-                  disabled={activePage === totalPages}
-                  className="
-                  cursor-pointer
-                    flex h-18.5 shrink-0 px-5
-                    items-center justify-center
-                    bg-white
-                    text-sm font-bold text-[#23A6F0]
-                    disabled:cursor-not-allowed
-                    disabled:text-[#BDBDBD]
-                  "
-                >
-                  Next
-                </button>
-              </div>
-            </section>
-              
-      {/* ================= BRANDS ================= */}
-      <section className="flex w-full justify-center bg-[#FAFAFA]">
-        <div
-          className="
-            flex w-full max-w-262.5
-            flex-col items-center justify-center
-            gap-12 px-6 py-14
-            md:flex-row md:flex-wrap
-            lg:flex-nowrap lg:justify-between
-          "
-        >
-          {brands.map((brand) => (
-            <div
-              key={brand.id}
+            <button
+              type="button"
+              onClick={() => handlePageChange(1)}
+              disabled={activePage === 1}
               className="
-                flex h-20 w-30
-                shrink-0 items-center justify-center
+                flex h-18.5 shrink-0
+                items-center justify-center
+                border-r border-[#BDBDBD]
+                bg-[#F3F3F3] px-5
+                text-sm font-bold text-[#BDBDBD]
+                disabled:cursor-not-allowed
               "
             >
-              <img
-                src={brand.image}
-                alt={`Brand ${brand.id}`}
-                className="max-h-full max-w-full object-contain"
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-      
-    </div>
+              First
+            </button>
+
+
+            {/* FIRST 6 PAGES */}
+
+            {Array.from({
+              length: Math.min(totalPages, 6),
+            }).map((_, index) => {
+              const page = index + 1;
+
+              return (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() =>
+                    handlePageChange(page)
+                  }
+                  className={`
+                    flex h-18.5 w-12.25 shrink-0
+                    cursor-pointer
+                    items-center justify-center
+                    border-r border-[#BDBDBD]
+                    text-sm font-bold
+                    ${
+                      activePage === page
+                        ? "bg-[#23A6F0] text-white"
+                        : "bg-white text-[#23A6F0]"
+                    }
+                  `}
+                >
+                  {page}
+                </button>
+              );
+            })}
+
+
+            {/* ... */}
+
+            {totalPages > 6 && (
+              <span
+                className="
+                  flex h-18.5 w-12.25 shrink-0
+                  items-center justify-center
+                  border-r border-[#BDBDBD]
+                  bg-white
+                  text-sm font-bold
+                  text-[#737373]
+                "
+              >
+                ...
+              </span>
+            )}
+
+
+            {/* LAST PAGE */}
+
+            {totalPages > 6 && (
+              <button
+                type="button"
+                onClick={() =>
+                  handlePageChange(totalPages)
+                }
+                className={`
+                  flex h-18.5 w-12.25 shrink-0
+                  cursor-pointer
+                  items-center justify-center
+                  border-r border-[#BDBDBD]
+                  text-sm font-bold
+                  ${
+                    activePage === totalPages
+                      ? "bg-[#23A6F0] text-white"
+                      : "bg-white text-[#23A6F0]"
+                  }
+                `}
+              >
+                {totalPages}
+              </button>
+            )}
+
+
+            {/* NEXT */}
+
+            <button
+              type="button"
+              onClick={() =>
+                handlePageChange(activePage + 1)
+              }
+              disabled={activePage === totalPages}
+              className="
+                flex h-18.5 shrink-0
+                cursor-pointer
+                items-center justify-center
+                bg-white px-5
+                text-sm font-bold
+                text-[#23A6F0]
+                disabled:cursor-not-allowed
+                disabled:text-[#BDBDBD]
+              "
+            >
+              Next
+            </button>
+
+          </div>
+
+        </section>
+
+
+        {/* ================= BRANDS ================= */}
+
+        <section className="flex w-full justify-center bg-[#FAFAFA]">
+
+          <div
+            className="
+              flex w-full max-w-262.5
+              flex-col items-center
+              justify-center gap-12
+              px-6 py-14
+              md:flex-row md:flex-wrap
+              lg:flex-nowrap
+              lg:justify-between
+            "
+          >
+
+            {brands.map((brand) => (
+              <div
+                key={brand.id}
+                className="
+                  flex h-20 w-30
+                  shrink-0 items-center
+                  justify-center
+                "
+              >
+                <img
+                  src={brand.image}
+                  alt={`Brand ${brand.id}`}
+                  className="
+                    max-h-full max-w-full
+                    object-contain
+                  "
+                />
+              </div>
+            ))}
+
+          </div>
+
+        </section>
+
+      </div>
     </>
   );
 }

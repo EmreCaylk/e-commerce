@@ -1,7 +1,29 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+
+// ================= CREATE SLUG =================
+
+const createSlug = (name = "") => {
+  return String(name)
+    .toLowerCase()
+    .trim()
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
 
 export default function ShopProducts() {
+  const {
+    gender,
+    categoryName,
+    categoryId,
+  } = useParams();
+
   const productList = useSelector(
     (state) => state.product.productList
   );
@@ -60,14 +82,32 @@ export default function ShopProducts() {
 
         {/* PRODUCTS */}
 
-        <div className="grid grid-cols-1 gap-x-7.5 gap-y-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-x-7.5
+            gap-y-12
+            sm:grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-4
+          "
+        >
           {productList.map((product) => (
             <Link
               key={product.id}
-              to={`/product/${product.id}`}
-              className="group flex flex-col"
+              to={`/shop/${gender}/${categoryName}/${categoryId}/${createSlug(product.name)}/${product.id}`}
+              className="
+                group
+                flex
+                cursor-pointer
+                flex-col
+                transition-transform
+                duration-200
+                hover:-translate-y-1
+              "
             >
+
               {/* IMAGE */}
 
               <div className="h-75 w-full overflow-hidden bg-[#F5F5F5]">
@@ -87,7 +127,16 @@ export default function ShopProducts() {
 
               {/* INFO */}
 
-              <div className="flex flex-col items-center px-4 py-6 text-center">
+              <div
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  px-4
+                  py-6
+                  text-center
+                "
+              >
 
                 <h3 className="text-[16px] font-bold text-[#252B42]">
                   {product.name}
@@ -98,6 +147,7 @@ export default function ShopProducts() {
                 </p>
 
                 <div className="mt-3 flex items-center gap-2">
+
                   <span className="text-[16px] font-bold text-[#23856D]">
                     ${product.price}
                   </span>
@@ -105,13 +155,15 @@ export default function ShopProducts() {
                   <span className="text-[13px] font-bold text-[#F3CD03]">
                     ★ {product.rating}
                   </span>
+
                 </div>
 
               </div>
+
             </Link>
           ))}
-
         </div>
+
       </div>
     </section>
   );

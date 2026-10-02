@@ -7,12 +7,13 @@ export const SET_FETCH_STATE = "SET_FETCH_STATE";
 export const SET_LIMIT = "SET_LIMIT";
 export const SET_OFFSET = "SET_OFFSET";
 export const SET_FILTER = "SET_FILTER";
-
+export const SET_PRODUCT = "SET_PRODUCT";
 
 // ================= INITIAL STATE =================
 
 const initialState = {
   categories: [],
+  product: null,
   productList: [],
   total: 0,
   limit: 25,
@@ -29,6 +30,12 @@ export default function productReducer(
   action
 ) {
   switch (action.type) {
+    
+    case SET_PRODUCT:
+      return {
+        ...state,
+        product: action.payload,
+      };
 
     case SET_CATEGORIES:
       return {
