@@ -301,21 +301,21 @@ const menCategories = categories.filter(
                 <User size={16} />
 
                 <span className="text-[14px] font-bold">
-                  <Link
-                    to="/login"
-                    className="hover:underline"
-                  >
-                    Login
-                  </Link>
+                 <Link
+                  to="/login"
+                  className="hover:underline"
+                >
+                  Login
+                </Link>
 
-                  
+                {" / "}
 
-                  <Link
-                    to="/signup"
-                    className="hover:underline"
-                  >
-                    Register
-                  </Link>
+                <Link
+                  to="/signup"
+                  className="hover:underline"
+                >
+                  Register
+                </Link>
                 </span>
               </div>
             )}
