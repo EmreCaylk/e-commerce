@@ -7,12 +7,16 @@ import {
   ShoppingCart,
   Eye,
 } from "lucide-react";
+import { addToCart } from "../store/actions/shoppingCartActions.js";
+
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProduct } from "../store/actions/productActions.js";
+
 import productDetail1 from "../assets/product detail 1.jpg";
 import productThumb1 from "../assets/product thumb 1.jpg";
 import productThumb2 from "../assets/product thumb 2.jpg";
+
 import bestSellerProduct1 from "../assets/bestseller product 1.jpg";
 import bestSellerProduct2 from "../assets/bestseller product 2.jpg";
 import bestSellerProduct3 from "../assets/bestseller product 3.jpg";
@@ -21,12 +25,15 @@ import bestSellerProduct5 from "../assets/bestseller product 5.jpg";
 import bestSellerProduct6 from "../assets/bestseller product 6.jpg";
 import bestSellerProduct7 from "../assets/bestseller product 7.jpg";
 import bestSellerProduct8 from "../assets/bestseller product 8.jpg";
+
+
 import detailBrand1 from "../assets/brand1.png";
 import detailBrand2 from "../assets/brand2.png";
 import detailBrand3 from "../assets/brand3.png";
 import detailBrand4 from "../assets/brand4.png";
 import detailBrand5 from "../assets/brand5.png";
 import detailBrand6 from "../assets/brand6.png";
+
 import productDescription from "../assets/product description.jpg";
 
 export default function ProductDetailPage() {
@@ -41,6 +48,8 @@ export default function ProductDetailPage() {
   const fetchState = useSelector(
     (state) => state.product.fetchState
   );
+
+
 
   // ================= FETCH PRODUCT =================
   useEffect(() => {
@@ -280,6 +289,7 @@ export default function ProductDetailPage() {
             <h1 className="text-xl font-normal text-[#252B42]">
               {product.name}
             </h1>
+
             {/* ================= REVIEWS ================= */}
             <div className="mt-3 flex items-center gap-3">
               <div className="flex items-center gap-1">
@@ -311,14 +321,17 @@ export default function ProductDetailPage() {
                   className="text-[#F3CD03]"
                 />
               </div>
+
               <span className="text-sm font-bold text-[#737373]">
                 10 Reviews
               </span>
+
             </div>
             {/* ================= PRICE ================= */}
             <p className="mt-5 text-2xl font-bold text-[#252B42]">
               ${product.price}
             </p>
+
             {/* ================= AVAILABILITY ================= */}
             <div className="mt-2 flex items-center gap-2">
               <span className="text-sm font-bold text-[#737373]">
@@ -437,6 +450,7 @@ export default function ProductDetailPage() {
               <button
                 type="button"
                 aria-label="Add to cart"
+                onClick={()=>dispatch(addToCart(product))}
                 className="
                   flex h-1040px]
                   cursor-pointer

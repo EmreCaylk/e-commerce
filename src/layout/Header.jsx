@@ -21,6 +21,15 @@ export default function Header() {
   const user = useSelector((state) => state.client.user);
   const categories = useSelector((state) => state.product.categories);
 
+  const cart = useSelector(
+  (state) => state.shoppingCart.cart
+);
+
+  const cartCount = cart.reduce(
+    (total, item) => total + item.count,
+    0
+  );
+
   const womenCategories = categories.filter(
     (category) => category.gender === "k"
   );
@@ -299,7 +308,7 @@ const menCategories = categories.filter(
                     Login
                   </Link>
 
-                  {" / "}
+                  
 
                   <Link
                     to="/signup"
@@ -321,16 +330,184 @@ const menCategories = categories.filter(
               <Search size={20} />
             </button>
 
-            {/* CART */}
+          {/* ================= CART ================= */}
 
-            <button
-              type="button"
-              className="hidden items-center gap-1 lg:flex"
-              aria-label="Shopping Cart"
-            >
-              <ShoppingCart size={20} />
-              <span className="text-[12px]">1</span>
-            </button>
+                <div className="group relative hidden lg:block">
+
+                  {/* CART BUTTON */}
+
+                  <button
+                    type="button"
+                    className="
+                      flex cursor-pointer
+                      items-center gap-1
+                      text-[#23A6F0]
+                    "
+                    aria-label="Shopping Cart"
+                  >
+                    <ShoppingCart size={20} />
+
+                    <span className="text-[12px]">
+                      {cartCount}
+                    </span>
+                  </button>
+
+
+                  {/* CART DROPDOWN */}
+
+                  <div
+                    className="
+                      invisible absolute right-0 top-full z-50
+                      mt-4 w-95
+                      rounded-lg bg-white
+                      opacity-0 shadow-xl
+                      transition-all duration-200
+                      group-hover:visible
+                      group-hover:opacity-100
+                    "
+                  >
+
+                    {/* HEADER */}
+
+                    <div className="border-b border-[#EEEEEE] px-5 py-4">
+
+                      <h3 className="text-[16px] font-bold text-[#252B42]">
+                        Sepetim ({cartCount} Ürün)
+                      </h3>
+
+                    </div>
+
+
+                    {/* PRODUCTS */}
+
+                    <div className="max-h-100 overflow-y-auto">
+
+                      {cart.length === 0 ? (
+
+                        <div className="px-5 py-8 text-center">
+                          <p className="text-sm font-bold text-[#737373]">
+                            Sepetiniz boş.
+                          </p>
+                        </div>
+
+                      ) : (
+
+                        cart.map((item) => (
+
+                          <div
+                            key={item.product.id}
+                            className="
+                              flex gap-4
+                              border-b border-[#EEEEEE]
+                              px-5 py-4
+                            "
+                          >
+
+                            {/* IMAGE */}
+
+                            <div
+                              className="
+                                h-24 w-20
+                                shrink-0
+                                overflow-hidden
+                                rounded-md
+                                bg-[#F5F5F5]
+                              "
+                            >
+                              <img
+                                src={item.product.images?.[0]?.url}
+                                alt={item.product.name}
+                                className="
+                                  h-full w-full
+                                  object-cover
+                                "
+                              />
+                            </div>
+
+
+                            {/* INFO */}
+
+                            <div className="flex min-w-0 flex-1 flex-col">
+
+                              <h4
+                                className="
+                                  line-clamp-2
+                                  text-[14px]
+                                  font-bold
+                                  text-[#252B42]
+                                "
+                              >
+                                {item.product.name}
+                              </h4>
+
+
+                              <p className="mt-2 text-[12px] text-[#737373]">
+                                Adet: {item.count}
+                              </p>
+
+
+                              <p className="mt-2 text-[15px] font-bold text-[#E77C40]">
+                                {(item.product.price * item.count).toFixed(2)} TL
+                              </p>
+
+                            </div>
+
+                          </div>
+
+                        ))
+
+                      )}
+
+                    </div>
+
+
+                    {/* FOOTER */}
+
+                    {cart.length > 0 && (
+
+                      <div className="flex gap-4 px-5 py-4">
+
+                        <Link
+                          to="/cart"
+                          className="
+                            flex h-11 flex-1
+                            items-center justify-center
+                            rounded-md
+                            border border-[#DDDDDD]
+                            text-[14px]
+                            font-bold
+                            text-[#252B42]
+                            hover:bg-[#F5F5F5]
+                          "
+                        >
+                          Sepete Git
+                        </Link>
+
+
+                        <Link
+                          to="/checkout"
+                          className="
+                            flex h-11 flex-1
+                            items-center justify-center
+                            rounded-md
+                            bg-[#E77C40]
+                            text-[14px]
+                            font-bold
+                            text-white
+                            hover:opacity-90
+                          "
+                        >
+                          Siparişi Tamamla
+                        </Link>
+
+                      </div>
+
+                    )}
+
+                  </div>
+
+                </div>
+                  
 
             {/* HEART */}
 

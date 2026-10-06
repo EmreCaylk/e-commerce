@@ -4,6 +4,17 @@ import {
   SET_ADDRESS,
 } from "../reducers/shoppingCartReducer.js";
 
+import {
+    ADD_TO_CART,
+    INCREASE_CART_ITEM,
+    DECREASE_CART_ITEM,
+    REMOVE_FROM_CART,
+    TOGGLE_CART_ITEM,
+} from "../reducers/shoppingCartReducer.js";
+
+
+
+
 export const setCart = (cart) => {
     return {
         type:SET_CART,
@@ -24,3 +35,54 @@ export const setAdress = (adress) => {
         payload:adress,
     };
 };
+
+
+export const addToCart = (product) => {
+    return(dispatch) => {
+        dispatch({
+            type: ADD_TO_CART,
+            payload: product,
+        });
+    };
+};
+
+// ================= INCREASE =================
+
+export const increaseCartItem = (productId) => {
+    return(dispatch) => {
+        dispatch({
+            type:INCREASE_CART_ITEM,
+            payload:productId,
+        });
+    };
+};
+// ================= DECREASE =================
+export const decreaseCartItem = (productId) => {
+    return(dispatch) => {
+        dispatch({
+            type: DECREASE_CART_ITEM,
+            payload:productId,
+        });
+    };
+};
+
+// ================= REMOVE =================
+export const removeFromCart = (productId)=> {
+    return(dispatch)=> {
+        dispatch({
+            type:REMOVE_FROM_CART,
+            payload:productId,
+        });
+    };
+};
+
+// ================= TOGGLE =================
+
+export const toggleCartItem = (productId) => {
+    return(dispatch) => {
+        dispatch({
+            type:TOGGLE_CART_ITEM,
+            payload:productId,
+        })
+    }
+}
