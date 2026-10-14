@@ -10,6 +10,8 @@ export const DECREASE_CART_ITEM = "DECREASE_CART_ITEM";
 export const REMOVE_FROM_CART = "REMOVE_FROM_CART";
 export const TOGGLE_CART_ITEM = "TOGGLE_CART_ITEM";
 
+export const CLEAR_CART = "CLEAR_CART";
+
 
 // ================= INITIAL STATE =================
 
@@ -43,20 +45,22 @@ export default function shoppingCartReducer(
             const product = action.payload;
 
             const existingProduct = state.cart.find(
-                (item) => item.product.id === product.id
+                (item) =>
+                    item.product.id === product.id
             );
 
             if (existingProduct) {
                 return {
                     ...state,
 
-                    cart: state.cart.map((item) =>
-                        item.product.id === product.id
-                            ? {
-                                ...item,
-                                count: item.count + 1,
-                            }
-                            : item
+                    cart: state.cart.map(
+                        (item) =>
+                            item.product.id === product.id
+                                ? {
+                                    ...item,
+                                    count: item.count + 1,
+                                }
+                                : item
                     ),
                 };
             }
@@ -83,13 +87,14 @@ export default function shoppingCartReducer(
             return {
                 ...state,
 
-                cart: state.cart.map((item) =>
-                    item.product.id === action.payload
-                        ? {
-                            ...item,
-                            count: item.count + 1,
-                        }
-                        : item
+                cart: state.cart.map(
+                    (item) =>
+                        item.product.id === action.payload
+                            ? {
+                                ...item,
+                                count: item.count + 1,
+                            }
+                            : item
                 ),
             };
 
@@ -101,16 +106,17 @@ export default function shoppingCartReducer(
             return {
                 ...state,
 
-                cart: state.cart.map((item) =>
-                    item.product.id === action.payload
-                        ? {
-                            ...item,
-                            count:
-                                item.count > 1
-                                    ? item.count - 1
-                                    : 1,
-                        }
-                        : item
+                cart: state.cart.map(
+                    (item) =>
+                        item.product.id === action.payload
+                            ? {
+                                ...item,
+                                count:
+                                    item.count > 1
+                                        ? item.count - 1
+                                        : 1,
+                            }
+                            : item
                 ),
             };
 
@@ -136,20 +142,32 @@ export default function shoppingCartReducer(
             return {
                 ...state,
 
-                cart: state.cart.map((item) =>
-                    item.product.id === action.payload
-                        ? {
-                            ...item,
-                            checked: !item.checked,
-                        }
-                        : item
+                cart: state.cart.map(
+                    (item) =>
+                        item.product.id === action.payload
+                            ? {
+                                ...item,
+                                checked: !item.checked,
+                            }
+                            : item
                 ),
+            };
+
+
+        // ================= CLEAR CART =================
+
+        case CLEAR_CART:
+
+            return {
+                ...state,
+                cart: [],
             };
 
 
         // ================= PAYMENT =================
 
         case SET_PAYMENT:
+
             return {
                 ...state,
                 payment: action.payload,
@@ -159,6 +177,7 @@ export default function shoppingCartReducer(
         // ================= ADDRESS =================
 
         case SET_ADDRESS:
+
             return {
                 ...state,
                 address: action.payload,

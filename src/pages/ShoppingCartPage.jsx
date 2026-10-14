@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import {
   increaseCartItem,
@@ -14,6 +15,8 @@ export default function ShoppingCartPage() {
   const cart = useSelector(
     (state) => state.shoppingCart.cart
   );
+
+  const navigate = useNavigate();
 
   // ================= PRODUCT TOTAL =================
 
@@ -563,29 +566,30 @@ export default function ShoppingCartPage() {
                 {/* ORDER BUTTON */}
 
                 <button
-                  type="button"
-                  className="
-                    mt-8
-                    flex
-                    h-14
-                    w-full
-                    cursor-pointer
-                    items-center
-                    justify-center
-                    rounded-md
-                    bg-[#E77C40]
-                    text-[16px]
-                    font-bold
-                    text-white
-                    transition
-                    hover:opacity-90
-                  "
-                >
-                  Sipariş Oluştur
-                  <span className="ml-2 text-xl">
-                    ›
-                  </span>
-                </button>
+                type="button"
+                onClick={() => navigate("/order")}
+                className="
+                  mt-8
+                  flex
+                  h-14
+                  w-full
+                  cursor-pointer
+                  items-center
+                  justify-center
+                  rounded-md
+                  bg-[#E77C40]
+                  text-[16px]
+                  font-bold
+                  text-white
+                  transition
+                  hover:opacity-90
+                "
+              >
+                Sipariş Oluştur
+                <span className="ml-2 text-xl">
+                  ›
+                </span>
+              </button>
 
               </div>
 
