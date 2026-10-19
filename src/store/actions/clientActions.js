@@ -427,13 +427,14 @@ export const deleteCreditCard = (cardId) => {
   };
 };
 
+
+
 // =====================================================
 // CREATE ORDER
 // =====================================================
 
-
 export const createOrder = (orderData) => {
-  return async (dispatch) => {
+  return async () => {
     try {
       const response = await api.post(
         "/order",
@@ -445,6 +446,27 @@ export const createOrder = (orderData) => {
       console.error(
         "SİPARİŞ OLUŞTURULAMADI:",
         error.response?.data || error.message
+      );
+
+      throw error;
+    }
+  };
+};
+// =====================================================
+// GET PREVIOUS ORDERS
+// =====================================================
+
+export const fetchOrders = () => {
+  return async (dispatch) => {
+    try {
+      const response = await api.get("/order");
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "SİPARİŞLER ALINAMADI:",
+        error.response?.data ||
+          error.message
       );
 
       throw error;

@@ -273,30 +273,113 @@ const menCategories = categories.filter(
           >
 
             {/* USER */}
+                {isLoggedIn ? (
+                  <div className="group relative hidden lg:block">
 
-            {isLoggedIn ? (
-              <div className="hidden items-center gap-2.5 lg:flex">
+                    {/* ================= USER BUTTON ================= */}
 
-                <Gravatar
-                  email={user.email}
-                  size={36}
-                  rating="pg"
-                  default="mp"
-                  className="h-9 w-9 rounded-full object-cover"
-                />
+                    <button
+                      type="button"
+                      className="
+                        flex
+                        cursor-pointer
+                        items-center
+                        gap-2.5
+                      "
+                    >
 
-                <div className="flex flex-col">
-                  <span className="max-w-30 truncate text-[14px] font-bold text-[#23A6F0]">
-                    {user.name || "User"}
-                  </span>
+                      <Gravatar
+                        email={user.email}
+                        size={36}
+                        rating="pg"
+                        default="mp"
+                        className="h-9 w-9 rounded-full object-cover"
+                      />
 
-                  <span className="max-w-37.5 truncate text-[11px] text-[#737373]">
-                    {user.email}
-                  </span>
-                </div>
+                      <div className="flex flex-col text-left">
 
-              </div>
-            ) : (
+                        <div className="
+                          flex
+                          items-center
+                          gap-1
+                        ">
+
+                          <span className="
+                            max-w-30
+                            truncate
+                            text-[14px]
+                            font-bold
+                            text-[#23A6F0]
+                          ">
+                            {user.name || "User"}
+                          </span>
+
+                          <ChevronDown size={14} />
+
+                        </div>
+
+                        <span className="
+                          max-w-37.5
+                          truncate
+                          text-[11px]
+                          text-[#737373]
+                        ">
+                          {user.email}
+                        </span>
+
+                      </div>
+
+                    </button>
+
+
+                    {/* ================= USER DROPDOWN ================= */}
+
+                    <div className="
+                      invisible
+                      absolute
+                      right-0
+                      top-full
+                      z-50
+                      pt-4
+                      opacity-0
+                      transition-all
+                      duration-200
+                      group-hover:visible
+                      group-hover:opacity-100
+                    ">
+
+                      <div className="
+                        w-52
+                        rounded-lg
+                        bg-white
+                        py-2
+                        shadow-xl
+                      ">
+
+                        {/* SİPARİŞLERİM */}
+
+                        <Link
+                          to="/orders"
+                          className="
+                            block
+                            px-5
+                            py-3
+                            text-[14px]
+                            font-bold
+                            text-[#252B42]
+                            hover:bg-[#F5F5F5]
+                            hover:text-[#23A6F0]
+                          "
+                        >
+                          Siparişlerim
+                        </Link>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                ) : (      
               <div className="hidden items-center gap-1.5 lg:flex">
                 <User size={16} />
 
